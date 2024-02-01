@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Weather Search</title>
+    <link rel="stylesheet" href="weder.css">
+</head>
+<body>
+    <div class="container">
+        <i class="fa-solid fa-cloud-sun"></i>
+        <h1>Weather Search</h1>
+        <i class="fa-solid fa-location-dot"></i> 
+        <input type="text" id="cityInput" placeholder="Enter Location" >
+         <button id="searchButton">Search</button>
+        <div id="weatherInfo">
+            <h2 id="weather">Weather in <span id="city"></span></h2>
+            <p id="temperature">Temperature: <span id="temp"></span>°C 🌡️</p>
+            <p id="humidity">Humidity: <span id="hum"></span>% 💧</p>
+            <p id="description">Description: <span id="desc"></span> <span id="emoji"></span></p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const apiKey = "a7b6981a249226d9c9e89dd848b88aeb"; // Replace with your OpenWeatherMap API key
+
+            document.getElementById("searchButton").addEventListener("click", function () {
+                const city = document.getElementById("cityInput").value;
+                if (city) {
+                    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const cityElement = document.getElementById("city");
+                            const tempElement = document.getElementById("temp");
+                            const humElement = document.getElementById("hum");
+                            const descElement = document.getElementById("desc");
+                            const emojiElement = document.getElementById("emoji");
+
+                            if (data.cod === 200) {
+                                const temperature = data.main.temp;
+                                const description = data.weather[0].description;
+                                const humidity = data.main.humidity;
+
+                                cityElement.textContent = city;
+                                tempElement.textContent = temperature;
+                                humElement.textContent = humidity;
+                                descElement.textContent = description;
+
+                                // Set emoji based on weather description
+                                if (description.includes("sunny")) {
+                                    emojiElement.textContent = "☀️";
+                                } else if (description.includes("clouds")) {
+                                    emojiElement.textContent = "☁️";
+                                } else {
+                                    emojiElement.textContent = ""; // For unknown conditions
+                                }
+
+                                const weatherInfo = document.getElementById("weatherInfo");
+                                weatherInfo.style.display = "block"; // Show the weather info
+                            } else {
+                                const weatherInfo = document.getElementById("weatherInfo");
+                                weatherInfo.style.display = "none"; // Hide the weather info
+                                alert("City not found.");
+                            }
+                        })
+                        .catch(error => console.error("Error fetching data:", error));
+                }
+            });
+        });
+    </script>
+</body>
+</html>
